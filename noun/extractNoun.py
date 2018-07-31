@@ -31,5 +31,5 @@ class ExtractNoun(object):
 
 if __name__ == "__main__":
     obj = ExtractNoun()
-    word = obj.extract("늦잠은커녕")
+    word = obj.extract("술렁이는")
     print(word)
