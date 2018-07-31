@@ -6,8 +6,8 @@ class SearchLongDist(object):
         self.conn = pymysql.connect(
                 host="hotelchat.ce2zgalnsfar.ap-northeast-2.rds.amazonaws.com",
                 db="tissue",
-                user="ciceron", 
-                password="ciceron3388!",
+                user="translator", 
+                password="noSecret01!",
                 charset='utf8',
                 cursorclass=pymysql.cursors.DictCursor
                 )
