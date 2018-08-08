@@ -1,3 +1,5 @@
+from module_every_decomp import generate_whole_candidates
+
 import pymysql
 import copy
 
@@ -123,6 +125,59 @@ class SearchLongDist(object):
 
         return heads
 
+    def forcedPartition(self, word):
+        cursor = self.conn.cursor()
+
+        # use Hyonsu's function
+        partitioned_candidates = generate_whole_candidates(word)
+
+        mid_partitioned_list = []
+        for item in partitioned_candidates:
+            mid_partitioned_list.extend(item)
+
+        mid_partitioned_list = list(set([ "'{}'".format(unit_word) for unit_word in mid_partitioned_list if len(unit_word) > 1 ]))
+        inlined_string = ', '.join(mid_partitioned_list)
+
+        query = """
+            SELECT cnt, word
+            FROM sejongUnitDic
+            WHERE word IN ( {} )
+        """.format(inlined_string)
+        cursor.execute(query)
+        words_in_db_list = cursor.fetchall()
+        words_in_db_list_words_only = [ item['word'] for item in words_in_db_list ]
+
+        res = []
+        for candidate in partitioned_candidates:
+            is_exist = False
+            temp_res = []
+
+            for idx, unit_word in enumerate(candidate):
+                if unit_word in words_in_db_list_words_only:
+                    is_exist = True
+                    for db_item in words_in_db_list:
+                        if db_item['word'] == unit_word:
+                            temp_res.append(dict(db_item))
+                            break
+
+                else:
+                    if idx == 0:
+                        temp_res.append({"cnt":0, "word":unit_word})
+                    else:
+                        if temp_res[-1]['cnt'] > 0:
+                            temp_res.append({"cnt":0, "word":unit_word})
+                        else:
+                            temp_res[-1]['word'] = "{}{}".format(temp_res[-1]['word'], unit_word)
+
+            if is_exist == True:
+                for item in res:
+                    if temp_res == item:
+                        break
+
+                else:
+                    res.append(temp_res)
+
+        return res
 
 
 if __name__ == "__main__":
@@ -137,6 +192,11 @@ if __name__ == "__main__":
 
         ret = searchObj.nounPartioning(word, fromRight=True)
         print("Right")
+        for item in ret:
+            print(item)
+
+        print("Forced partitioning")
+        ret = searchObj.forcedPartition(word)
         for item in ret:
             print(item)
 
