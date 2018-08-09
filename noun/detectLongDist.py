@@ -61,7 +61,7 @@ class SearchLongDist(object):
         if fromRight == True:
             original_word = original_word[::-1]
 
-        heads = [ self._unitDivide(original_word, rightMost=fromRight) ]
+        heads = [ [item] for item in self._unitDivide(original_word, rightMost=fromRight) ]
         idx = 0
 
         while True:
@@ -182,7 +182,13 @@ class SearchLongDist(object):
 
 if __name__ == "__main__":
     searchObj = SearchLongDist()
-    test_words = ["한국전력공사", "세종말뭉치", "언어정보연구원장", "두피케어전문샴푸", "대학생선교회"]
+    test_words = [
+              "한국전력공사"
+            , "세종말뭉치"
+            , "언어정보연구원장"
+            , "두피케어전문샴푸"
+            , "대학생선교회"
+            , "투자자귀속유의"]
     for word in test_words:
         ret = searchObj.nounPartioning(word)
         print("{} 결과:".format(word))
