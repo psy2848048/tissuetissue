@@ -173,6 +173,26 @@ class SearchLongDist(object):
                 for item in res:
                     if temp_res == item:
                         break
+                    
+                    if len(temp_res) != len(item):
+                        continue
+
+                    # Word check
+                    cnt_new = 0
+                    cnt_old = 0
+                    for word_new, word_old in zip(temp_res, item):
+                        if word_new['word'] != word_old['word']:
+                            break
+
+                        cnt_new += word_new['cnt']
+                        cnt_old += word_old['cnt']
+
+                    else:
+                        if cnt_new >= cnt_old:
+                            res.remove(item)
+                            res.append(temp_res)
+
+                        break
 
                 else:
                     res.append(temp_res)
@@ -188,7 +208,10 @@ if __name__ == "__main__":
             , "언어정보연구원장"
             , "두피케어전문샴푸"
             , "대학생선교회"
-            , "투자자귀속유의"]
+            , "투자자귀속유의"
+            , "드루킹특검"
+            , "한국사물인터넷진흥협회"
+            ]
     for word in test_words:
         ret = searchObj.nounPartioning(word)
         print("{} 결과:".format(word))
