@@ -199,6 +199,61 @@ class SearchLongDist(object):
 
         return res
 
+    def weightRedistribution(self, candidates):
+        dup_candidates = copy.deepcopy(candidates)
+        ret = []
+        for unit_cand in dup_candidates:
+
+            is_exist = False
+            for idx, word in enumerate(unit_cand):
+                if idx == 0 and len(word['word']) == 1:
+                    #어두에 1음절
+                    print("Front: ", unit_cand)
+                    is_exist = True
+                    re_cnt = unit_cand[1]['cnt']
+                    re_word = word['word'] + unit_cand[1]['word']
+                    for anot_cand in dup_candidates:
+                        for anot_word in anot_cand:
+                            if re_word == anot_word['word']:
+                                anot_word['cnt'] += re_cnt
+
+                elif idx < len(unit_cand) - 1 and len(word['word']) == 1:
+                    # 중간 1음절
+                    print("Middle: ", unit_cand)
+                    is_exist = True
+
+                    re_cnt_front = unit_cand[idx-1]['cnt']
+                    re_word_front = unit_cand[idx-1]['word'] + word['word']
+                    re_cnt_back = unit_cand[idx+1]['cnt']
+                    re_word_back = word['word'] + unit_cand[idx+1]['word']
+                    for anot_cand in dup_candidates:
+                        for anot_word in anot_cand:
+                            if re_word_front == anot_word['word']:
+                                anot_word['cnt'] += re_cnt_front
+
+                            elif re_word_back == anot_word['word']:
+                                anot_word['cnt'] += re_cnt_back
+
+                elif idx == len(unit_cand) - 1 and len(word['word']) == 1:
+                    # 어말에 1음절
+                    print("End: ", unit_cand)
+                    is_exist = True
+                    re_cnt = unit_cand[idx-1]['cnt']
+                    re_word = unit_cand[idx-1]['word'] + word['word']
+                    for anot_cand in dup_candidates:
+                        for anot_word in anot_cand:
+                            if re_word == anot_word['word']:
+                                anot_word['cnt'] += re_cnt
+
+                else:
+                    # 음슴
+                    pass
+
+            if is_exist == False:
+                ret.append(unit_cand)
+
+        return ret
+
     def getCandidates(self, word):
         ret_left = self.nounPartioning(word)
         ret_right = self.nounPartioning(word, fromRight=True)
@@ -212,6 +267,8 @@ class SearchLongDist(object):
         for item in ret_forced:
             if item not in ret:
                 ret.append(item)
+
+        ret = self.weightRedistribution(ret)
 
         return ret
 
