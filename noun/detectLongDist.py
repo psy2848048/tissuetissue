@@ -199,6 +199,22 @@ class SearchLongDist(object):
 
         return res
 
+    def getCandidates(self, word):
+        ret_left = self.nounPartioning(word)
+        ret_right = self.nounPartioning(word, fromRight=True)
+        ret_forced = self.forcedPartition(word)
+
+        ret = ret_left
+        for item in ret_right:
+            if item not in ret:
+                ret.append(item)
+
+        for item in ret_forced:
+            if item not in ret:
+                ret.append(item)
+
+        return ret
+
 
 if __name__ == "__main__":
     searchObj = SearchLongDist()
@@ -213,19 +229,8 @@ if __name__ == "__main__":
             , "한국사물인터넷진흥협회"
             ]
     for word in test_words:
-        ret = searchObj.nounPartioning(word)
+        ret = searchObj.getCandidates(word)
         print("{} 결과:".format(word))
-        print("Left")
-        for item in ret:
-            print(item)
-
-        ret = searchObj.nounPartioning(word, fromRight=True)
-        print("Right")
-        for item in ret:
-            print(item)
-
-        print("Forced partitioning")
-        ret = searchObj.forcedPartition(word)
         for item in ret:
             print(item)
 

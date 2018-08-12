@@ -72,17 +72,16 @@ def scoring_candidates(whole_candidates, lemma_list_of_dict_A, compound_noun):
 
 
 ### 여기부터 메인 코드 시작
-
-
-compound_noun = "흙먼지털이기"
-
-whole_candidates = generate_whole_candidates(compound_noun)
-
-lemma_list_of_dict_A = get_lemma_list_of_dictionary_A()
-
-list_with_score = scoring_candidates(whole_candidates, lemma_list_of_dict_A, compound_noun)
-
-threshold = 0
-for i in list_with_score:
-    if i[1] > threshold: #복합명사 별로 출력되는 점수대가 다름. 적당히 조절해가면서 보세여
-        print(i)
+if __name__ == "__main__":
+    compound_noun = "흙먼지털이기"
+    
+    whole_candidates = generate_whole_candidates(compound_noun)
+    
+    lemma_list_of_dict_A = get_lemma_list_of_dictionary_A()
+    
+    list_with_score = scoring_candidates(whole_candidates, lemma_list_of_dict_A, compound_noun)
+    
+    threshold = 0
+    for i in list_with_score:
+        if i[1] > threshold: #복합명사 별로 출력되는 점수대가 다름. 적당히 조절해가면서 보세여
+            print(i)

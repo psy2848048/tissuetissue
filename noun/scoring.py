@@ -1,5 +1,6 @@
 import pymysql
 import copy
+import math
 
 class Scoring(object):
     def __init__(self):
@@ -76,7 +77,7 @@ class Scoring(object):
                 print(is_exist, unit_score)
                 total_multipled = total_multipled * unit_score['freq']
 
-            score = total_multipled ** ( 1 / len(unit_cand) )
+            score = math.pow(total_multipled,  1. / float(len(unit_cand)))
             unit_item = {"score": score, "candidate": unit_cand}
             print(unit_item)
             ret.append(unit_item)
