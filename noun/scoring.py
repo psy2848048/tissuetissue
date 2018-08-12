@@ -13,6 +13,14 @@ class Scoring(object):
                 )
 
     def _checkJunction(self, front_tail, back_head):
+        """
+        단일 연결에 대하여 통계를 내는 함수
+
+        1) 연결부분 앞뒷말이 모두 있는 경우 -> 해당 카운트를 가중치로 사용
+        2) 연결부분 중 뒷 말이 있는 경우 -> 뒷말에 해당하는 카운트를 합한 다음 평균 내어 가중치로 사용
+        3) 연결부분 중 앞 말이 있는 경우 -> 앞말에 해당하는 카운트를 합한 다음 평균 내어 가중치로 사용
+        3) 없으면 가중치 1
+        """
         cursor = self.conn.cursor()
         query_twoside = """
             SELECT cnt, front_tail, back_head
@@ -32,7 +40,7 @@ class Scoring(object):
         """
         cursor.execute(query_back, (back_head, ))
         ret = cursor.fetchone()
-        if ret['freq'] > 0:
+        if ret is not None and len(ret) > 0 and ret['freq'] > 0:
             return True, {'freq': ret['freq'], 'case': ",{}".format(back_head)}
 
         query_front = """
@@ -43,13 +51,18 @@ class Scoring(object):
         """
         cursor.execute(query_front, (front_tail, ))
         ret = cursor.fetchone()
-        if ret['freq'] > 0:
+        if ret is not None and len(ret) > 0 and ret['freq'] > 0:
             return True, {'freq': ret['freq'], 'case': "{},".format(front_tail)}
         
         # Whole else
         return False, {'freq': 1, 'case': ""}
 
     def scoring(self, candidates):
+        """
+        후보들의 우선순위 산정 함수
+
+        각각의 연결부위에서 가중치를 따 온다음 기하평균을 낸다.
+        """
         ret = []
         for unit_cand in candidates:
             total_multipled = 1
