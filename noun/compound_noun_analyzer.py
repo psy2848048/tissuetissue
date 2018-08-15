@@ -10,11 +10,29 @@ def analyzer_top5(word):
     candidates = candidate_creater.getCandidates(word)
     ret = scorer.scoring(candidates)
 
-    return ret
+    if len(ret) > 0:
+        return ret
+
+    else:
+        return [
+                {
+                      "score": 1
+                    , "candidate": [ 
+                          {
+                              "cnt": 0
+                            , "word": word
+                          } 
+                        ]
+                }
+               ]
 
 def analyzer(word):
     cand = analyzer_top5(word)
-    ret = [ item['word'] for item in cand[0]['candidate'] ]
+    if len(cand) > 0:
+        ret = [ item['word'] for item in cand[0]['candidate'] ]
+
+    else:
+        ret = [ word ]
 
     return ret
 

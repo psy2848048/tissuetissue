@@ -64,6 +64,7 @@ class SearchLongDist(object):
         heads = [ [item] for item in self._unitDivide(original_word, rightMost=fromRight) ]
         idx = 0
 
+        loop = 0
         while True:
             # Checking more loop is needed
             total_length = 0
@@ -122,6 +123,11 @@ class SearchLongDist(object):
             # Prepare another loop
             if idx == len(heads) - 1:
                 idx = 0
+
+            if loop > 30:
+                break
+
+            loop += 1
 
         return heads
 
@@ -249,7 +255,13 @@ class SearchLongDist(object):
                     # 음슴
                     pass
 
-            if is_exist == False:
+        for unit_cand in dup_candidates:
+            need_break = False
+            for word in unit_cand:
+                if len(word['word']) < 2:
+                    need_break = True
+                    break
+            else:
                 ret.append(unit_cand)
 
         return ret
