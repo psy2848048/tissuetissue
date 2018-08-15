@@ -3,6 +3,20 @@ from module_every_decomp import generate_whole_candidates
 import pymysql
 import copy
 
+SUFFIX = [
+            "자리"
+          , "머리"
+          , "몰이"
+          , "쟁이"
+          , "탱이"
+          , "막이"
+          , "거리"
+          , "살이"
+          , "치기"
+          , "덩어리"
+          , "받이"
+        ]
+
 class SearchLongDist(object):
     def __init__(self):
         self.conn = pymysql.connect(
@@ -266,6 +280,19 @@ class SearchLongDist(object):
 
         return ret
 
+    def suffixForceAttach(self, candidates):
+        ret = []
+        for unit_cand in candidates:
+            if unit_cand[-1]['word'] in SUFFIX and len(unit_cand) > 1:
+                new_cand = copy.deepcopy(unit_cand)
+
+                new_cand[-2]['word'] += unit_cand[-1]['word']
+                new_cand.remove(new_cand[-1])
+
+                ret.append(new_cand)
+
+        return ret
+
     def getCandidates(self, word):
         ret_left = self.nounPartioning(word)
         ret_right = self.nounPartioning(word, fromRight=True)
@@ -281,6 +308,7 @@ class SearchLongDist(object):
                 ret.append(item)
 
         ret = self.weightRedistribution(ret)
+        ret = self.suffixForceAttach(ret)
 
         return ret
 
@@ -296,6 +324,10 @@ if __name__ == "__main__":
             , "투자자귀속유의"
             , "드루킹특검"
             , "한국사물인터넷진흥협회"
+            , "바람막이"
+            , "올챙이자리"
+            , "두물머리"
+            , "버르장머리"
             ]
     for word in test_words:
         ret = searchObj.getCandidates(word)
