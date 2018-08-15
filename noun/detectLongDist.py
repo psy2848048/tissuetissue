@@ -291,6 +291,9 @@ class SearchLongDist(object):
 
                 ret.append(new_cand)
 
+            else:
+                ret.append(unit_cand)
+
         return ret
 
     def getCandidates(self, word):
