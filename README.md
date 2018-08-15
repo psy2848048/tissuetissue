@@ -7,7 +7,8 @@ TissueTissue에서 제작한 NLP 모듈 모음입니다.
 
 ### 1. 복합명사 분해기
 
-해당 모듈을 import해서 사용하실 수 있습니다.
+해당 모듈을 import해서 사용하실 수 있습니다.<br>
+현재는 원격 DB에 접속해서 구동하고 있기 때문에 필히 **인터넷에 연결**되어 있어야 구동이 가능합니다.
 
 noun/compound_noun_analyzer.py
 
