@@ -43,7 +43,7 @@ if __name__ == "__main__":
     import sys
 
     parser = argparse.ArgumentParser(description='TissueTissue Compond Noun Analyzer')
-    parser.add_argument('-f', '--file', dest='filename', help='Test input file name')
+    parser.add_argument('-i', '--input', dest='filename', help='Test input file name')
     args = parser.parse_args()
 
     testcases = []

@@ -24,7 +24,7 @@ res = analyzer('한국전력공사')
 Batch로 테스트하고 싶으면 다음과 같이 CSV 파일을 넣어 사용하실 수 있습니다.
 
 ```python
-python3 compound_noun_analyzer.py -f input.csv
+python3 compound_noun_analyzer.py -i input.csv
 
 # Input CSV는 다음과 같은 형식을 따라야 합니다.
 
