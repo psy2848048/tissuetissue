@@ -44,6 +44,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='TissueTissue Compond Noun Analyzer')
     parser.add_argument('-i', '--input', dest='filename', help='Test input file name')
+    parser.add_argument('-t', '--test', dest='test', action='store_true', help='Test input file name')
     args = parser.parse_args()
 
     testcases = []
@@ -51,26 +52,39 @@ if __name__ == "__main__":
         parser.print_help()
         sys.exit(1)
 
-    with open(args.filename, 'r') as f:
-        reader = csv.reader(f)
-        for item in reader:
-            case = item[0]
-            answer = item[1]
-            testcases.append([case, answer.split(",")])
+    if args.test == True:
+        with open(args.filename, 'r') as f:
+            reader = csv.reader(f)
+            for item in reader:
+                case = item[0]
+                answer = item[1]
+                testcases.append([case, answer.split(",")])
 
-    test_result = []
-    for word, answer in testcases:
-        ret = analyzer_top5(word)
-        for item in ret:
-            print(item)
+        test_result = []
+        for word, answer in testcases:
+            ret = analyzer_top5(word)
+            for item in ret:
+                print(item)
 
-        top_answer = analyzer(word)
-        print(colored("Top answer: ", "red"), "{}".format(top_answer))
-        print()
+            top_answer = analyzer(word)
+            print(colored("Top answer: ", "red"), "{}".format(top_answer))
+            print()
 
-        test_result.append([word, ",".join(answer), ",".join(top_answer), "O" if top_answer == answer else "X"])
+            test_result.append([word, ",".join(answer), ",".join(top_answer), "O" if top_answer == answer else "X"])
 
-    with open("result.csv", 'w') as f2:
-        writer = csv.writer(f2)
-        for item in test_result:
-            writer.writerow(item)
+        with open("result.csv", 'w') as f2:
+            writer = csv.writer(f2)
+            for item in test_result:
+                writer.writerow(item)
+
+    else:
+        f = open(args.filename, 'r')
+        word_list = f.read().split('\n')
+        f.close()
+
+        for word in word_list:
+            f2 = open('output.txt', 'a')
+            answer = ' '.join( analyzer(word) )
+            f2.write( '{}\n'.format(answer) )
+            f2.close()
+

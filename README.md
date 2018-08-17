@@ -24,14 +24,22 @@ res = analyzer('한국전력공사')
 Batch로 테스트하고 싶으면 다음과 같이 CSV 파일을 넣어 사용하실 수 있습니다.
 
 ```python
-python3 compound_noun_analyzer.py -i input.csv
+python3 compound_noun_analyzer.py -i ../testdata/input.txt
 
-# Input CSV는 다음과 같은 형식을 따라야 합니다.
+# Input 텍스트 파일은 다음과 같은 형식을 따라야 합니다.
 
-# 한국전력공사,"한국,전력,공사"
-# 1번컬럼: 테스트할 문제
-# 2번컬럼: 정답
+# 한국전력공사
+# 이스탄불
+# 아시아나항공
+# ...
 ```
 
-결과는 result.csv에 정답 일치 여부와 함께 출력됩니다.
+결과는 output.txt로 출력되며, 형식은 다음과 같습니다.
+
+```text
+한국 전력 공사
+이스탄불
+아시아나 항공
+....
+```
 
