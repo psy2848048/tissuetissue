@@ -1,6 +1,7 @@
 # TissueTissue NLP
 
 [![Build Status](https://travis-ci.org/psy2848048/tissuetissue.svg?branch=master)](https://travis-ci.org/psy2848048/tissuetissue) <br>
+[![codecov](https://codecov.io/gh/psy2848048/tissuetissue/branch/master/graph/badge.svg)](https://codecov.io/gh/psy2848048/tissuetissue) <br>
 
 TissueTissue에서 제작한 NLP 모듈 모음입니다.
 추후 Code 정리, Packaging, 오프라인 구동 기능 및 DB 업데이트 기능 추가를 통하여 간편하게 사용할 수 있도록 업데이트 할 예정입니다.
