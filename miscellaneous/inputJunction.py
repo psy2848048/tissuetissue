@@ -3,10 +3,10 @@ import pymysql
 import traceback
 
 conn = pymysql.connect(
-        host="hotelchat.ce2zgalnsfar.ap-northeast-2.rds.amazonaws.com",
+        host="",
         db="tissue",
         user="translator", 
-        password="noSecret01!",
+        password="",
         charset='utf8',
         cursorclass=pymysql.cursors.DictCursor
         )
