@@ -4,7 +4,9 @@ python:
 
 install:
 - pip install -r requirement.txt
+- pip install pytest pytest-cov codecov
 
-script: pytest test
+script: pytest --cov=./
+
 sudo: enabled
 
