@@ -1,0 +1,12 @@
+language: python
+python:
+- '3.5.2'
+
+install:
+- pip install -r requirement.txt
+
+script: pytest test
+sudo: enabled
+
+notifications:
+    slack: ciceron:7G8e5xhMi2CwUVBoOlNozPrA

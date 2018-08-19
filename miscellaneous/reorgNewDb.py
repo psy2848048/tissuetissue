@@ -4,30 +4,11 @@ import pymysql
 import traceback
 
 
-#with open('new_db.txt', 'r') as f:
-#    with open('new_db.csv', 'w') as f2:
-#        csvWriter = csv.writer(f2)
-#
-#        content = f.read()
-#        content = content.split('\n')
-#        for line in content:
-#            find_obj = re.search(r'(.*?)/(.*?), ([0-9]+)', line)
-#            if find_obj is None:
-#                continue
-#
-#            word = find_obj.group(1)
-#            category = find_obj.group(2)
-#            cnt = int(find_obj.group(3))
-#            length = len(word)
-#
-#            csvWriter.writerow([cnt, word, category, length])
-
-
 conn = pymysql.connect(
-        host="hotelchat.ce2zgalnsfar.ap-northeast-2.rds.amazonaws.com",
+        host="",
         db="tissue",
         user="translator", 
-        password="noSecret01!",
+        password="",
         charset='utf8',
         cursorclass=pymysql.cursors.DictCursor
         )
