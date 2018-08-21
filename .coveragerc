@@ -5,3 +5,4 @@ omit = */test*
 [report]
 exclude_lines =
     if __name__ == .__main__.:
+    def _checkJunction(self, front_tail, back_head):

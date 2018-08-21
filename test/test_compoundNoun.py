@@ -1,10 +1,12 @@
 import sys
 sys.path.append("../noun")
 sys.path.append("./noun")
+sys.path.append("./")
 import unittest
 from datetime import datetime, timedelta
 
 from compound_noun_analyzer import analyzer
+from extractNoun import ExtractNoun
 from detectLongDist import SearchLongDist
 from scoring import Scoring
 
@@ -25,6 +27,7 @@ class CompoundNounAnalyzerTestCase(unittest.TestCase):
                 , "올챙이자리"
                 , "두물머리"
                 , "버르장머리"
+                , "대한항공대한항공"
                 ]
 
         searchObj = SearchLongDist()
@@ -77,3 +80,19 @@ class CompoundNounAnalyzerTestCase(unittest.TestCase):
         end = datetime.now()
 
         self.assertEqual(True, True if end - now < timedelta(seconds=30) else False )
+
+    def test04_shortScenario(self):
+        now = datetime.now()
+        res = analyzer("꿈자리")
+        end = datetime.now()
+
+        self.assertEqual(True, True if end - now < timedelta(seconds=30) else False )
+
+    def test05_extractNoun(self):
+        now = datetime.now()
+        obj = ExtractNoun()
+        word = obj.extract("술렁이는")
+        end = datetime.now()
+
+        self.assertEqual(True, True if end - now < timedelta(seconds=3) else False )
+

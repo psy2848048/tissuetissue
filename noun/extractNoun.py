@@ -1,3 +1,7 @@
+import sys
+sys.path.append('../.')
+sys.path.append('./')
+
 import re
 import csv
 
@@ -5,7 +9,10 @@ import csv
 class ExtractNoun(object):
     def __init__(self):
         self.stopwords = []
-        self._loadStopwordList("stopwords.csv")
+        try:
+            self._loadStopwordList("testdata/stopwords.csv")
+        except:
+            self._loadStopwordList("../testdata/stopwords.csv")
 
     def _loadStopwordList(self, filename):
         with open(filename, 'r') as f:
