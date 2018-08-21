@@ -78,3 +78,11 @@ class CompoundNounAnalyzerTestCase(unittest.TestCase):
         end = datetime.now()
 
         self.assertEqual(True, True if end - now < timedelta(seconds=30) else False )
+
+    def test04_shortScenario(self):
+        now = datetime.now()
+        res = analyzer("꿈자리")
+        end = datetime.now()
+
+        self.assertEqual(True, True if end - now < timedelta(seconds=30) else False )
+
