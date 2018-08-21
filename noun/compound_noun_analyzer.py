@@ -37,7 +37,7 @@ def analyzer(word):
     return ret
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     import csv
     import argparse
     import sys
