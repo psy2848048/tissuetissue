@@ -25,6 +25,7 @@ class CompoundNounAnalyzerTestCase(unittest.TestCase):
                 , "올챙이자리"
                 , "두물머리"
                 , "버르장머리"
+                , "대한항공대한항공"
                 ]
 
         searchObj = SearchLongDist()
