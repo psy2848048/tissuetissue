@@ -333,10 +333,13 @@ if __name__ == "__main__":
             , "버르장머리"
             ]
     for word in test_words:
-        ret = searchObj.getCandidates(word)
-        print("{} 결과:".format(word))
-        for item in ret:
-            print(item)
+        try:
+            ret = searchObj.getCandidates(word)
+            print("{} 결과:".format(word))
+            for item in ret:
+                print(item)
 
-        print()
+            print()
 
+        except:
+            print("인터넷 연결을 확인해주세요!")

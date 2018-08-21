@@ -135,7 +135,11 @@ if __name__ == "__main__":
         , [{'cnt': 4, 'word': '한국사'}, {'cnt': 0, 'word': '물'}, {'cnt': 2, 'word': '인터넷'}, {'cnt': 57, 'word': '진흥'}, {'cnt': 204, 'word': '협회'}]
         ]
 
-    ret = candObj.scoring(testset)
+    try:
+        ret = candObj.scoring(testset)
 
-    for item in ret:
-        print(item)
+        for item in ret:
+            print(item)
+
+    except:
+        print("인터넷 연결을 확인해주세요!")
