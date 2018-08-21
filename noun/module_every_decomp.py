@@ -2,7 +2,11 @@ from itertools import combinations
 import re
 
 def get_lemma_list_of_dictionary_A():
-    dic_file = open("./dic_A")
+    try:
+        dic_file = open("testdata/dic_A")
+    except:
+        dic_file = open("../testdata/dic_A")
+
     lines = dic_file.readlines()
     lemma_list = []
     for line in lines:
