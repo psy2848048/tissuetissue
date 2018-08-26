@@ -42,7 +42,8 @@ class Scoring(object):
         cursor.execute(query_twoside, (front_tail, back_head, ))
         ret = cursor.fetchone()
         if ret is not None and len(ret) > 0:
-            return True, {'freq': ret['cnt'], 'case': "{},{}".format(front_tail, back_head)}
+            #return True, {'freq': ret['cnt'], 'case': "{},{}".format(front_tail, back_head)}
+            pass
 
         tot = 1
         query_back = """
@@ -54,8 +55,8 @@ class Scoring(object):
         cursor.execute(query_back, (back_head, ))
         ret = cursor.fetchone()
         if ret is not None and len(ret) > 0 and ret['freq'] > 0:
-            return True, {'freq': ret['freq'], 'case': ",{}".format(back_head)}
-            #tot = ret['freq']
+            #return True, {'freq': ret['freq'], 'case': ",{}".format(back_head)}
+            tot = ret['freq']
 
         query_front = """
             SELECT SUM(cnt)/count(cnt) as freq, front_tail
@@ -66,12 +67,12 @@ class Scoring(object):
         cursor.execute(query_front, (front_tail, ))
         ret = cursor.fetchone()
         if ret is not None and len(ret) > 0 and ret['freq'] > 0:
-            return True, {'freq': ret['freq'], 'case': "{},".format(front_tail)}
-            #tot = tot * ret['freq']
+            #return True, {'freq': ret['freq'], 'case': "{},".format(front_tail)}
+            tot = tot * ret['freq']
         
         # Whole else
-        return False, {'freq': 1, 'case': ""}
-        #return True, {'freq': math.sqrt(tot), 'case': ""}
+        #return False, {'freq': 1, 'case': ""}
+        return True, {'freq': math.sqrt(tot), 'case': ""}
 
     def scoring(self, candidates):
         """
@@ -87,17 +88,19 @@ class Scoring(object):
                     break
 
                 # 나
-                #front_tail = unit_word['word'][-1]
-                #back_head = unit_cand[idx+1]['word'][0]
-                #is_exist, unit_score = self._checkJunction(front_tail, back_head)
-                #print(is_exist, unit_score)
-                #total_multipled = total_multipled * unit_score['freq']
+                front_tail = unit_word['word'][-1]
+                back_head = unit_cand[idx+1]['word'][0]
+                is_exist, unit_score = self._checkJunction(front_tail, back_head)
+                print(is_exist, unit_score)
+                total_multipled = total_multipled * unit_score['freq']
 
 
-            #score1 = math.pow(total_multipled,  1. / float(len(unit_cand)))
-            score = self._calcFreq(unit_cand)
+            score1 = math.pow(total_multipled,  1. / float(len(unit_cand)))
+            score2 = self._calcFreq(unit_cand)
 
-            #score = math.log(score1) + math.log(score2)
+            score = score1 / 2.0 + score2
+            print("Junction: {}, Cnt: {}, Overall: {}".format(score1, score2, score))
+
             unit_item = {"score": score, "candidate": unit_cand}
             print(unit_item)
             ret.append(unit_item)
