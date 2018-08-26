@@ -24,7 +24,7 @@ class Scoring(object):
         ret = math.pow(tot_mul, 1.0 / float( len(candidate) ) )
         return ret
 
-    def _checkJunction(self, front_tail, back_head):
+    def _checkJunction(self, front_tail, back_head, option=0):
         """
         단일 연결에 대하여 통계를 내는 함수
 
@@ -42,7 +42,10 @@ class Scoring(object):
         cursor.execute(query_twoside, (front_tail, back_head, ))
         ret = cursor.fetchone()
         if ret is not None and len(ret) > 0:
-            return True, {'freq': ret['cnt'], 'case': "{},{}".format(front_tail, back_head)}
+            if option == 0:
+                return True, {'freq': ret['cnt'], 'case': "{},{}".format(front_tail, back_head)}
+            else:
+                pass
 
         tot = 1
         query_back = """
@@ -54,8 +57,10 @@ class Scoring(object):
         cursor.execute(query_back, (back_head, ))
         ret = cursor.fetchone()
         if ret is not None and len(ret) > 0 and ret['freq'] > 0:
-            return True, {'freq': ret['freq'], 'case': ",{}".format(back_head)}
-            #tot = ret['freq']
+            if option == 0:
+                return True, {'freq': ret['freq'], 'case': ",{}".format(back_head)}
+            else:
+                tot = ret['freq']
 
         query_front = """
             SELECT SUM(cnt)/count(cnt) as freq, front_tail
@@ -66,18 +71,28 @@ class Scoring(object):
         cursor.execute(query_front, (front_tail, ))
         ret = cursor.fetchone()
         if ret is not None and len(ret) > 0 and ret['freq'] > 0:
-            return True, {'freq': ret['freq'], 'case': "{},".format(front_tail)}
-            #tot = tot * ret['freq']
+            if option == 0:
+                return True, {'freq': ret['freq'], 'case': "{},".format(front_tail)}
+            else:
+                tot = tot * ret['freq']
         
         # Whole else
-        return False, {'freq': 1, 'case': ""}
-        #return True, {'freq': math.sqrt(tot), 'case': ""}
+        if option == 0:
+            return False, {'freq': 1, 'case': ""}
 
-    def scoring(self, candidates):
+        else:
+            return True, {'freq': math.sqrt(tot), 'case': ""}
+
+    def scoring(self, candidates, option=0):
         """
         후보들의 우선순위 산정 함수
 
         각각의 연결부위에서 가중치를 따 온다음 기하평균을 낸다.
+
+        Option
+          0: (a,b)의 Junction 정보를 우선 사용
+          1: (a, )와 ( , b)의 정보의 기하평균으로 사용
+          2: 사전 정보만 사용
         """
         ret = []
         for unit_cand in candidates:
@@ -86,18 +101,22 @@ class Scoring(object):
                 if idx == len(unit_cand) - 1:
                     break
 
-                # 나
-                #front_tail = unit_word['word'][-1]
-                #back_head = unit_cand[idx+1]['word'][0]
-                #is_exist, unit_score = self._checkJunction(front_tail, back_head)
-                #print(is_exist, unit_score)
-                #total_multipled = total_multipled * unit_score['freq']
+                if option != 2:
+                    front_tail = unit_word['word'][-1]
+                    back_head = unit_cand[idx+1]['word'][0]
+                    is_exist, unit_score = self._checkJunction(front_tail, back_head, option)
+                    print(is_exist, unit_score)
+                    total_multipled = total_multipled * unit_score['freq']
 
+                    score1 = math.pow(total_multipled,  1. / float(len(unit_cand)))
+                    score2 = self._calcFreq(unit_cand)
+                    score = score1 / 2.0 + score2
+                    print("Junction: {}, Cnt: {}, Overall: {}".format(score1, score2, score))
 
-            #score1 = math.pow(total_multipled,  1. / float(len(unit_cand)))
-            score = self._calcFreq(unit_cand)
+                else:
+                    score = self._calcFreq(unit_cand)
+                    print("Score: {}".format(score))
 
-            #score = math.log(score1) + math.log(score2)
             unit_item = {"score": score, "candidate": unit_cand}
             print(unit_item)
             ret.append(unit_item)
@@ -136,7 +155,7 @@ if __name__ == "__main__":
         ]
 
     try:
-        ret = candObj.scoring(testset)
+        ret = candObj.scoring(testset, option=2)
 
         for item in ret:
             print(item)

@@ -331,6 +331,7 @@ if __name__ == "__main__":
             , "올챙이자리"
             , "두물머리"
             , "버르장머리"
+            , "아시아나항공"
             ]
     for word in test_words:
         try:
