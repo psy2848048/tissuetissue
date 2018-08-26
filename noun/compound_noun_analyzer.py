@@ -45,7 +45,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='TissueTissue Compond Noun Analyzer')
     parser.add_argument('-i', '--input', dest='filename', help='Test input file name')
     parser.add_argument('-t', '--test', dest='test', action='store_true', help='Test input file name')
-    parser.add_argument('-o', '--option', dest='option', help='Option for scoring (0: (a,b) Junction score / 1: Average of (a, ) and ( , b) / 2: Only dictionary // Default: 2', default=2)
+    parser.add_argument('-o', '--option', dest='option', type=int, help='Option for scoring (0: (a,b) Junction score / 1: Average of (a, ) and ( , b) / 2: Only dictionary // Default: 2', default=2)
     args = parser.parse_args()
 
     testcases = []
