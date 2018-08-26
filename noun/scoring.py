@@ -97,8 +97,10 @@ class Scoring(object):
         ret = []
         for unit_cand in candidates:
             total_multipled = 1
+            score = None
             for idx, unit_word in enumerate(unit_cand):
                 if idx == len(unit_cand) - 1:
+                    score = self._calcFreq(unit_cand)
                     break
 
                 if option != 2:
