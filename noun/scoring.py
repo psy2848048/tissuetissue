@@ -1,10 +1,14 @@
 import pymysql
 import copy
 import math
+import time
 
 class Scoring(object):
     def __init__(self):
-        self.conn = pymysql.connect(
+        self.conn = self.getConn()
+
+    def getConn(self):
+        return pymysql.connect(
                 host="hotelchat.ce2zgalnsfar.ap-northeast-2.rds.amazonaws.com",
                 db="tissue",
                 user="translator", 
@@ -12,6 +16,9 @@ class Scoring(object):
                 charset='utf8',
                 cursorclass=pymysql.cursors.DictCursor
                 )
+
+    def closeConn(self):
+        self.conn.close()
 
     def _calcFreq(self, candidate):
         """
@@ -33,7 +40,17 @@ class Scoring(object):
         3) 연결부분 중 앞 말이 있는 경우 -> 앞말에 해당하는 카운트를 합한 다음 평균 내어 가중치로 사용
         3) 없으면 가중치 1
         """
-        cursor = self.conn.cursor()
+        while True:
+            try:
+                cursor = self.conn.cursor()
+                break
+
+            except:
+                self.conn = self.getConn()
+                print("Reconnecting...")
+                time.sleep(1)
+                continue
+
         query_twoside = """
             SELECT cnt, front_tail, back_head
             FROM junction_info
