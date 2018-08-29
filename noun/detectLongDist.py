@@ -2,6 +2,7 @@ from module_every_decomp import generate_whole_candidates
 
 import pymysql
 import copy
+import time
 
 SUFFIX = [
             "자리"
@@ -19,7 +20,10 @@ SUFFIX = [
 
 class SearchLongDist(object):
     def __init__(self):
-        self.conn = pymysql.connect(
+        self.conn = self.getConn()
+
+    def getConn(self):
+        return pymysql.connect(
                 host="hotelchat.ce2zgalnsfar.ap-northeast-2.rds.amazonaws.com",
                 db="tissue",
                 user="translator", 
@@ -28,8 +32,22 @@ class SearchLongDist(object):
                 cursorclass=pymysql.cursors.DictCursor
                 )
 
+    def closeConn(self):
+        self.conn.close()
+
     def _unitDivide(self, partial_word, rightMost=False):
-        cursor = self.conn.cursor()
+        while True:
+            try:
+                cursor = self.conn.cursor()
+                break
+
+            except:
+                print("Reconnecting...")
+                self.conn = self.getConn()
+                time.sleep(1)
+                continue
+
+
         res = []
 
         if len(partial_word) <= 1:
@@ -146,7 +164,16 @@ class SearchLongDist(object):
         return heads
 
     def forcedPartition(self, word):
-        cursor = self.conn.cursor()
+        while True:
+            try:
+                cursor = self.conn.cursor()
+                break
+
+            except:
+                print("Reconnecting...")
+                self.conn = self.getConn()
+                time.sleep(1)
+                continue
 
         # use Hyonsu's function
         partitioned_candidates = generate_whole_candidates(word)
