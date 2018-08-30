@@ -75,18 +75,20 @@ class CompoundNounAnalyzerTestCase(unittest.TestCase):
         self.assertEqual(5, len(ret))
 
     def test03_repeating(self):
-        now = datetime.now()
-        res = analyzer("대한항공대한항공")
-        end = datetime.now()
+        for param in range(3):
+            now = datetime.now()
+            res = analyzer("대한항공대한항공", option=param)
+            end = datetime.now()
 
-        self.assertEqual(True, True if end - now < timedelta(seconds=30) else False )
+            self.assertEqual(True, True if end - now < timedelta(seconds=30) else False )
 
     def test04_shortScenario(self):
-        now = datetime.now()
-        res = analyzer("꿈자리")
-        end = datetime.now()
+        for param in range(3):
+            now = datetime.now()
+            res = analyzer("꿈자리", option=param)
+            end = datetime.now()
 
-        self.assertEqual(True, True if end - now < timedelta(seconds=30) else False )
+            self.assertEqual(True, True if end - now < timedelta(seconds=30) else False )
 
     def test05_extractNoun(self):
         now = datetime.now()
