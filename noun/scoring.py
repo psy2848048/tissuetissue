@@ -2,23 +2,11 @@ import pymysql
 import copy
 import math
 import time
+from load_data import loadData
 
 class Scoring(object):
     def __init__(self):
-        self.conn = self.getConn()
-
-    def getConn(self):
-        return pymysql.connect(
-                host="hotelchat.ce2zgalnsfar.ap-northeast-2.rds.amazonaws.com",
-                db="tissue",
-                user="translator", 
-                password="noSecret01!",
-                charset='utf8',
-                cursorclass=pymysql.cursors.DictCursor
-                )
-
-    def closeConn(self):
-        self.conn.close()
+        self.junction_info = loadData("junction_info")
 
     def _calcFreq(self, candidate):
         """
@@ -40,58 +28,31 @@ class Scoring(object):
         3) 연결부분 중 앞 말이 있는 경우 -> 앞말에 해당하는 카운트를 합한 다음 평균 내어 가중치로 사용
         3) 없으면 가중치 1
         """
-        while True:
-            try:
-                cursor = self.conn.cursor()
-                break
-
-            except:
-                self.conn = self.getConn()
-                print("Reconnecting...")
-                time.sleep(1)
-                continue
-
-        query_twoside = """
-            SELECT cnt, front_tail, back_head
-            FROM junction_info
-            WHERE front_tail = %s AND back_head = %s
-        """
-        cursor.execute(query_twoside, (front_tail, back_head, ))
-        ret = cursor.fetchone()
+        df = self.junction_info
+        ret = df[ (df.front_tail == front_tail) & (df.back_head == back_head) ]
         if ret is not None and len(ret) > 0:
             if option == 0:
-                return True, {'freq': ret['cnt'], 'case': "{},{}".format(front_tail, back_head)}
+                return True, {'freq': ret['cnt'].values[0], 'case': "{},{}".format(front_tail, back_head)}
             else:
                 pass
 
         tot = 1
-        query_back = """
-            SELECT SUM(cnt)/count(cnt) as freq, back_head
-            FROM junction_info
-            WHERE back_head = %s
-            GROUP BY back_head
-        """
-        cursor.execute(query_back, (back_head, ))
-        ret = cursor.fetchone()
-        if ret is not None and len(ret) > 0 and ret['freq'] > 0:
-            if option == 0:
-                return True, {'freq': ret['freq'], 'case': ",{}".format(back_head)}
-            else:
-                tot = ret['freq']
 
-        query_front = """
-            SELECT SUM(cnt)/count(cnt) as freq, front_tail
-            FROM junction_info
-            WHERE front_tail = %s
-            GROUP BY back_head
-        """
-        cursor.execute(query_front, (front_tail, ))
-        ret = cursor.fetchone()
-        if ret is not None and len(ret) > 0 and ret['freq'] > 0:
-            if option == 0:
-                return True, {'freq': ret['freq'], 'case': "{},".format(front_tail)}
-            else:
-                tot = tot * ret['freq']
+        back_sum = df[df.back_head == back_head].groupby(['back_head']).sum().cnt.values[0]
+        back_cnt = df[df.back_head == back_head].groupby(['back_head']).count().cnt.values[0]
+        freq_back = back_sum / back_cnt if back_cnt > 0 else 1
+        if option == 0:
+            return True, {'freq': freq_back, 'case': ",{}".format(back_head)}
+        else:
+            tot = freq_back
+
+        front_sum = df[df.front_tail == front_tail].groupby(['front_tail']).sum().cnt.values[0]
+        front_cnt = df[df.front_tail == front_tail].groupby(['front_tail']).count().cnt.values[0]
+        freq_front = front_sum / front_cnt if front_cnt > 0 else 1
+        if option == 0:
+            return True, {'freq': freq_front, 'case': "{},".format(front_tail)}
+        else:
+            tot = tot * freq_front
         
         # Whole else
         if option == 0:
@@ -173,11 +134,8 @@ if __name__ == "__main__":
         , [{'cnt': 4, 'word': '한국사'}, {'cnt': 0, 'word': '물'}, {'cnt': 2, 'word': '인터넷'}, {'cnt': 57, 'word': '진흥'}, {'cnt': 204, 'word': '협회'}]
         ]
 
-    try:
-        ret = candObj.scoring(testset, option=2)
+    ret = candObj.scoring(testset, option=1)
 
-        for item in ret:
-            print(item)
+    for item in ret:
+        print(item)
 
-    except:
-        print("인터넷 연결을 확인해주세요!")

@@ -3,6 +3,7 @@ from module_every_decomp import generate_whole_candidates
 import pymysql
 import copy
 import time
+from load_data import loadData
 
 SUFFIX = [
             "자리"
@@ -20,34 +21,9 @@ SUFFIX = [
 
 class SearchLongDist(object):
     def __init__(self):
-        self.conn = self.getConn()
-
-    def getConn(self):
-        return pymysql.connect(
-                host="hotelchat.ce2zgalnsfar.ap-northeast-2.rds.amazonaws.com",
-                db="tissue",
-                user="translator", 
-                password="noSecret01!",
-                charset='utf8',
-                cursorclass=pymysql.cursors.DictCursor
-                )
-
-    def closeConn(self):
-        self.conn.close()
+        self.sejongUnitDic = loadData("sejongUnitDic")
 
     def _unitDivide(self, partial_word, rightMost=False):
-        while True:
-            try:
-                cursor = self.conn.cursor()
-                break
-
-            except:
-                print("Reconnecting...")
-                self.conn = self.getConn()
-                time.sleep(1)
-                continue
-
-
         res = []
 
         if len(partial_word) <= 1:
@@ -65,18 +41,13 @@ class SearchLongDist(object):
                 particle = particle[::-1]
 
             length = len(particle)
-            query = """
-                SELECT cnt, word
-                FROM sejongUnitDic
-                WHERE length = %s AND word = %s
-            """
-            cursor.execute(query, (length, particle, ))
-            ret = cursor.fetchone()
+            df = self.sejongUnitDic
+            ret = df[(df.length == length) & (df.word == particle)]
 
             if ret is None or len(ret) < 1:
                 continue
 
-            res.append({"cnt": ret['cnt'], "word": ret['word']})
+            res.append({"cnt": ret['cnt'].values[0], "word": ret['word'].values[0]})
 
         if len(res) >= 1:
             return res
@@ -164,17 +135,6 @@ class SearchLongDist(object):
         return heads
 
     def forcedPartition(self, word):
-        while True:
-            try:
-                cursor = self.conn.cursor()
-                break
-
-            except:
-                print("Reconnecting...")
-                self.conn = self.getConn()
-                time.sleep(1)
-                continue
-
         # use Hyonsu's function
         partitioned_candidates = generate_whole_candidates(word)
 
@@ -182,17 +142,9 @@ class SearchLongDist(object):
         for item in partitioned_candidates:
             mid_partitioned_list.extend(item)
 
-        mid_partitioned_list = list(set([ "'{}'".format(unit_word) for unit_word in mid_partitioned_list if len(unit_word) > 1 ]))
-        inlined_string = ', '.join(mid_partitioned_list)
-
-        query = """
-            SELECT cnt, word
-            FROM sejongUnitDic
-            WHERE word IN ( {} )
-        """.format(inlined_string)
-        cursor.execute(query)
-        words_in_db_list = cursor.fetchall()
-        words_in_db_list_words_only = [ item['word'] for item in words_in_db_list ]
+        df = self.sejongUnitDic
+        words_in_db_list = df.word.isin(mid_partitioned_list)
+        words_in_db_list_words_only = [ item for item in words_in_db_list]
 
         res = []
         for candidate in partitioned_candidates:
@@ -361,13 +313,10 @@ if __name__ == "__main__":
             , "아시아나항공"
             ]
     for word in test_words:
-        try:
-            ret = searchObj.getCandidates(word)
-            print("{} 결과:".format(word))
-            for item in ret:
-                print(item)
+        ret = searchObj.getCandidates(word)
+        print("{} 결과:".format(word))
+        for item in ret:
+            print(item)
 
-            print()
+        print()
 
-        except:
-            print("인터넷 연결을 확인해주세요!")
