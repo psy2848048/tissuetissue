@@ -28,6 +28,7 @@ class CompoundNounAnalyzerTestCase(unittest.TestCase):
                 , "두물머리"
                 , "버르장머리"
                 , "대한항공대한항공"
+                , "혁명적신사업"
                 ]
 
         searchObj = SearchLongDist()
@@ -67,12 +68,13 @@ class CompoundNounAnalyzerTestCase(unittest.TestCase):
             , [{'cnt': 4, 'word': '한국사'}, {'cnt': 0, 'word': '물'}, {'cnt': 2, 'word': '인터넷'}, {'cnt': 57, 'word': '진흥'}, {'cnt': 204, 'word': '협회'}]
             ]
 
-        ret = candObj.scoring(testset)
+        for param in range(3):
+            ret = candObj.scoring(testset, option=param)
 
-        for item in ret:
-            print(item)
+            for item in ret:
+                print(item)
 
-        self.assertEqual(5, len(ret))
+            self.assertEqual(5, len(ret))
 
     def test03_repeating(self):
         for param in range(3):
