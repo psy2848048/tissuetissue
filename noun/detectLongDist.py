@@ -143,8 +143,8 @@ class SearchLongDist(object):
             mid_partitioned_list.extend(item)
 
         df = self.sejongUnitDic
-        words_in_db_list = df.word.isin(mid_partitioned_list)
-        words_in_db_list_words_only = [ item for item in words_in_db_list]
+        words_in_db_list = df[ df.word.isin(mid_partitioned_list) ]
+        words_in_db_list_words_only = list(words_in_db_list.word)
 
         res = []
         for candidate in partitioned_candidates:
@@ -154,7 +154,7 @@ class SearchLongDist(object):
             for idx, unit_word in enumerate(candidate):
                 if unit_word in words_in_db_list_words_only:
                     is_exist = True
-                    for db_item in words_in_db_list:
+                    for _, db_item in words_in_db_list.iterrows():
                         if db_item['word'] == unit_word:
                             temp_res.append(dict(db_item))
                             break
@@ -207,7 +207,7 @@ class SearchLongDist(object):
             for idx, word in enumerate(unit_cand):
                 if idx == 0 and len(word['word']) == 1:
                     #어두에 1음절
-                    print("Front: ", unit_cand)
+                    #print("Front: ", unit_cand)
                     is_exist = True
                     re_cnt = unit_cand[1]['cnt']
                     re_word = word['word'] + unit_cand[1]['word']
@@ -218,7 +218,7 @@ class SearchLongDist(object):
 
                 elif idx < len(unit_cand) - 1 and len(word['word']) == 1:
                     # 중간 1음절
-                    print("Middle: ", unit_cand)
+                    #print("Middle: ", unit_cand)
                     is_exist = True
 
                     re_cnt_front = unit_cand[idx-1]['cnt']
@@ -235,7 +235,7 @@ class SearchLongDist(object):
 
                 elif idx == len(unit_cand) - 1 and len(word['word']) == 1:
                     # 어말에 1음절
-                    print("End: ", unit_cand)
+                    #print("End: ", unit_cand)
                     is_exist = True
                     re_cnt = unit_cand[idx-1]['cnt']
                     re_word = unit_cand[idx-1]['word'] + word['word']
